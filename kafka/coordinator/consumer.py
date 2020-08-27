@@ -5,6 +5,7 @@ import copy
 import functools
 import logging
 import time
+import threading
 
 from kafka.vendor import six
 
@@ -78,6 +79,8 @@ class ConsumerCoordinator(BaseCoordinator):
                 subscribing to it. Requires 0.10+. Default: True
         """
         super(ConsumerCoordinator, self).__init__(client, metrics, **configs)
+        log.info("overriding coordinator lock with client lock")
+        self._lock = threading.Condition(client._lock)
 
         self.config = copy.copy(self.DEFAULT_CONFIG)
         for key in self.config:
